@@ -2,11 +2,16 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     ports:
       - "5000:5000"
 
   client:
-    build: ./client
+    build:
+      context: .
+      dockerfile: client/Dockerfile
     depends_on:
       - backend
+    command: python check_server.py
