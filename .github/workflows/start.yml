@@ -1,0 +1,22 @@
+name: start
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v3
+      - name: build and start containers
+        run: docker compose up --build -d
+      - name: wait for backend to start
+        run: sleep 5
+      - name: run client (test)
+        run: docker compose run --rm client
