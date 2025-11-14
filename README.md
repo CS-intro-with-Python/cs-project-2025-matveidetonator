@@ -1,38 +1,49 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DESIFpxz)
-# CS_2024_project
+# CS_2025_project
 
 ## Description
 
-Describe the project in 2-3 sentences (You can use more). 
+Simple Flask server and a client script to check. In future (to next deadline) planning to realize beneficial habit tracker. You can track how many pages have you read in a day or how many days you are not smoking or anything. 
 
 ## Setup
 
-Describe the steps to set up the environment and run the application. This can be a bash script or docker commands.
+To run the project locally:
 
 ```
-Your commands
+docker compose up --build -d # to launch
+
+docker compose logs backend # to get logs
+
+docker compose run --rm client # to watch check if everything is OK
+
 
 ```
 
 ## Requirements
 
-Describe technologies, libraries, languages you are using (this can be updated in the future).
+Python 3.11
+
+Flask
+
+requests
+
+Docker & Docker Compose
 
 ## Features
 
-Describe the main features the application performs.
+Backend: Flask server with at least one route (/)
 
-* Feature 1
-* Feature 2
+Client: Python script to test server routes
+
+Deployment: Dockerized setup for CI/CD on GitHub Actions and Railway
 
 ## Git
 
-Specify which branch will store the latest stable version of the application
+The main branch stores the latest stable version of the application.
 
 ## Success Criteria
 
-Describe the criteria by which the success of the project can be determined
-(this will be updated in the future)
-
-* Criteria 1
-
+Backend runs successfully, responds to requests
+Client can check if server is OK
+on Github Actions it passes test
+Railway deployment is accessible on cs-project-2025-matveidetonator-production.up.railway.app
