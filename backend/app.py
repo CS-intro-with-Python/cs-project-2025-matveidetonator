@@ -21,6 +21,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialize extensions
 db.init_app(app)
 
+# Enable CORS for all origins (public)
+from flask_cors import CORS
+CORS(app)
+
 
 # Swagger setup
 SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI

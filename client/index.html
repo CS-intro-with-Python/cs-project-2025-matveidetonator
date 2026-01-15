@@ -10,7 +10,7 @@
         
         body { 
             font-family: 'Cinzel', serif; 
-            background: linear-gradient(135deg, #2c0869 0%, #880ea6 100%);
+            background: #2c0869;
             color: #333; 
             margin: 0; 
             padding: 0;
@@ -50,7 +50,7 @@
         }
         
         button { 
-            background: #a80969;
+            background: #2c0869;
             color: #fff; 
             border: none; 
             padding: 14px 28px; 
@@ -59,7 +59,7 @@
             font-family: 'Cinzel', serif;
             font-size: 1em;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(91, 33, 182, 0.3);
+            box-shadow: 0 4px 12px rgba(44, 8, 105, 0.3);
             transition: all 0.3s ease;
         }
         
@@ -114,7 +114,12 @@
         }
         
         .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
             transition: opacity 0.3s ease;
+            height: 100%;
         }
         
         .card-meaning {
@@ -162,10 +167,19 @@
             padding: 4px 10px;
             border-radius: 12px;
             margin-bottom: 10px;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 600;
+            
+        }
+        .card-position-inner {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .card-image { 
@@ -188,6 +202,13 @@
             color: #1e1b2e;
         }
         
+        .card-orientation-container {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            align-items: end;
+            width: 100%;
+        }
         .card-orientation { 
             font-size: 0.75em; 
             color: #888;
@@ -417,7 +438,7 @@ function draw(kind) {
     // Remove ten-cards class
     cardsEl.classList.remove('ten-cards');
     
-    fetch('/api/tarot/spread/' + kind)
+    fetch('http://localhost:5000/api/tarot/spread/' + kind)
         .then(r => {
             if (!r.ok) throw new Error('Server error');
             return r.json();
@@ -432,15 +453,11 @@ function draw(kind) {
             if (kind === 'ten') {
                 cardsEl.classList.add('ten-cards');
                 // Split into two rows of 5
-                const row1 = data.cards.slice(0, 5);
-                const row2 = data.cards.slice(5, 10);
+                const row = data.cards;
                 
                 cardsEl.innerHTML = `
                     <div class="cards-row">
-                        ${row1.map((c, i) => createCardHTML(c, positionLabels[i], i)).join('')}
-                    </div>
-                    <div class="cards-row">
-                        ${row2.map((c, i) => createCardHTML(c, positionLabels[i + 5], i + 5)).join('')}
+                        ${row.map((c, i) => createCardHTML(c, positionLabels[i], i)).join('')}
                     </div>
                 `;
             } else {
@@ -464,17 +481,17 @@ function createCardHTML(card, position, index) {
     
     return `<div class="card ${orientationClass} ${suitClass}">
         <div class="card-content">
-            <div class="card-position">${position}</div>
-            <img class="card-image" src="/static/${card.image_path}" alt="${card.name}">
+            <div class="card-position"><div class="card-position-inner">${position}</div></div>
+            <img class="card-image"  width="120px" height="200px"  src="/static/${card.image_path}" alt="${card.name}">
             <div class="card-name">${card.name}</div>
-            <div class="card-orientation">${card.orientation}</div>
+            <div class="card-orientation-container"><div class="card-orientation">${card.orientation}</div></div>
         </div>
         <div class="card-meaning">${meaning}</div>
     </div>`;
 }
 
 function showHistory() {
-    fetch('/api/tarot/history?limit=20')
+    fetch('http://localhost:5000/api/tarot/history?limit=20')
         .then(r => {
             if (!r.ok) throw new Error('Server error');
             return r.json();

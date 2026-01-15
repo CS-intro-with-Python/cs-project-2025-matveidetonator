@@ -5,3 +5,4 @@ sqlalchemy
 Flask-SQLAlchemy
 pytest
 flask-swagger-ui
+flask-cors
