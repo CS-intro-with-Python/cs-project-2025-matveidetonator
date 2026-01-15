@@ -2,100 +2,141 @@
 
 # Tarot Spread
 
-A web application for tarot card readings, allowing users to draw spreads, view card meanings, and track their history.
+A web application for tarot card readings — draw spreads, read card meanings (upright and reversed), and browse past readings.
 
-## Features
+---
 
-- **Draw Spreads**: Choose between 3, 5, or 10-card spreads.
-- **Card Meanings**: Upright and reversed meanings for all 78 cards.
-- **History Tracking**: View past spreads and their details.
-- **Interactive UI**: Simple and intuitive browser-based interface.
+## 🚀 Quick start
 
-## Getting Started
+### Run with Docker (recommended)
 
-### Prerequisites
-- Docker
-- Docker Compose
+1. Build and run services:
 
-### Installation
+```bash
+docker compose up --build -d
+```
 
-1. Clone the repository:
-   ```bash
-   git clone <repository-url>
-   cd cs-project-2025-matveidetonator
-   ```
+2. Open:
+- App: http://localhost:5000
+- API docs (Swagger UI): http://localhost:5000/api/docs
 
-2. Build and run the application:
-   ```bash
-   docker compose up --build -d
-   ```
+### Run locally (without Docker)
 
-3. Open the application in your browser:
-   [http://localhost:5000](http://localhost:5000)
+1. Create and activate a virtual environment (Python 3.11 recommended):
 
-## API Documentation
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
 
-Interactive API documentation is available at:
-[http://localhost:5000/api/docs](http://localhost:5000/api/docs)
+2. Install dependencies:
 
-### Endpoints
+```bash
+pip install -r backend/requirements.txt
+```
 
-#### Spreads
-- `GET /api/tarot/spread/three` - Retrieve a 3-card spread.
-- `GET /api/tarot/spread/five` - Retrieve a 5-card spread.
-- `GET /api/tarot/spread/ten` - Retrieve a 10-card spread.
+3. (Optional) Set the database URL if not using the Docker PostgreSQL service:
 
-#### Cards
-- `GET /api/tarot/cards` - Retrieve all cards in the deck.
-- `GET /api/tarot/cards/<id>` - Retrieve a specific card by ID.
+```bash
+export DATABASE_URL='postgresql://user:pass@localhost:5432/tarot'
+```
 
-#### History
-- `GET /api/tarot/history` - Retrieve the history of spreads.
+4. Start the backend:
 
-## Project Structure
+```bash
+python backend/app.py
+```
+
+> The backend will attempt to create the database schema and seed the deck on startup.
+
+---
+
+## 🔧 Environment
+
+- DATABASE_URL — SQLAlchemy-style connection string (default used in Docker: `postgresql://tarot:tarot@db:5432/tarot`).
+- The backend listens on port `5000` by default.
+
+---
+
+## 📡 API Endpoints (examples)
+
+- Draw spreads:
+  - GET /api/tarot/spread/three  → 3-card spread
+  - GET /api/tarot/spread/five   → 5-card spread
+  - GET /api/tarot/spread/ten    → 10-card spread
+
+- Cards:
+  - GET /api/tarot/cards         → list all cards (supports `?suit=`)
+  - GET /api/tarot/cards/<id>    → get card by ID
+
+- History:
+  - GET /api/tarot/history?limit=10
+
+Quick curl examples:
+
+```bash
+curl http://localhost:5000/api/tarot/spread/three
+curl http://localhost:5000/api/tarot/cards | jq
+curl 'http://localhost:5000/api/tarot/history?limit=5'
+```
+
+---
+
+## 🧪 Tests
+
+Run tests locally from the `backend/` folder:
+
+```bash
+cd backend
+pytest
+```
+
+Or inside the running backend container:
+
+```bash
+docker compose exec backend pytest
+```
+
+---
+
+## 📁 Project structure
 
 ```
 cs-project-2025-matveidetonator/
-├── backend/
-│   ├── app.py           # Flask server
-│   ├── models.py        # Database models
-│   ├── seed_cards.py    # Deck initialization
-│   ├── test_api.py      # Unit and integration tests
-│   └── static/
-│       └── swagger.json # API documentation
-├── client/
-│   └── index.html       # Web interface
-└── docker-compose.yml   # Docker configuration
+├── backend/               # Flask API, models, tests and seeding script
+│   ├── app.py
+│   ├── models.py
+│   ├── seed_cards.py
+│   ├── requirements.txt
+│   └── tests/
+├── client/                # Static client (index.html + assets)
+│   ├── index.html
+│   └── web_server.py?     # optional helper to serve assets locally
+├── docker-compose.yml
+└── README.md
 ```
 
-## Tech Stack
+---
 
-- **Backend**: Python 3.11, Flask, Flask-SQLAlchemy
-- **Database**: PostgreSQL
-- **Frontend**: HTML, CSS, JavaScript
-- **Deployment**: Docker, Docker Compose
+## 📚 Tech stack
 
-## Running Tests
+- Backend: Python 3.11, Flask, Flask-SQLAlchemy
+- Database: PostgreSQL
+- Frontend: HTML / CSS / vanilla JS
+- Deployment: Docker, Docker Compose
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
+---
 
-2. Run tests using pytest:
-   ```bash
-   pytest
-   ```
+## ✅ Notes & Changelog
 
-## CI/CD
+- 2026-01-16 — README updated: added local development instructions, environment variables, curl examples, and test commands.
 
-- **CI**: GitHub Actions for automated testing and builds.
-- **CD**: Deployment using Docker Compose.
+---
 
-## Success Criteria
+## Contributing
 
-- Backend responds correctly to all API requests.
-- Client verifies server responses.
-- All tests pass successfully.
-- API documentation is accessible via Swagger UI.
-- Application is production-ready and deployable.
+Contributions and fixes are welcome via pull requests. Keep changes small, add tests where appropriate, and update the README or docs when adding features.
+
+---
+
+If you want, I can also add a short `Makefile` or `dev` scripts to simplify common tasks (run, test, lint). ✨
