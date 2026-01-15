@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tarot Spread</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap');
+        
+        * { box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Cinzel', serif; 
+            background: linear-gradient(135deg, #2c0869 0%, #880ea6 100%);
+            color: #333; 
+            margin: 0; 
+            padding: 0;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 40px auto; 
+            background: #E6E6FA; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+            padding: 32px; 
+        }
+        
+        h1 { 
+            text-align: center; 
+            color: #5b21b6; 
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.95em;
+            margin-bottom: 24px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+        
+        button { 
+            background: #a80969;
+            color: #fff; 
+            border: none; 
+            padding: 14px 28px; 
+            border-radius: 2px; 
+            cursor: pointer; 
+            font-family: 'Cinzel', serif;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(91, 33, 182, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        button:hover { 
+            background: #cb0c7f;
+        }
+        
+        .spread-title {
+            text-align: center;
+            color: #5b21b6;
+            font-size: 1.3em;
+            margin: 20px 0 16px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .spread-title.visible {
+            opacity: 1;
+        }
+        
+        .cards { 
+            margin-top: 20px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 20px;
+        }
+        
+        .cards.ten-cards {
+            max-width: 900px;
+            margin: 20px auto 0;
+        }
+        
+        .cards-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        
+        .card { 
+            background: #faf5ff;
+            border: 2px solid #c4b5fd; 
+            border-radius: 12px; 
+            padding: 14px; 
+            text-align: center; 
+            width: 160px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-content {
+            transition: opacity 0.3s ease;
+        }
+        
+        .card-meaning {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8em;
+            line-height: 1.4;
+            color: #1e1b2e;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .card:hover .card-content {
+            opacity: 0;
+        }
+        
+        .card:hover .card-meaning {
+            opacity: 1;
+        }
+        
+
+
+        
+        /* Suit color accents */
+        .card.suit-wands { border-color: #f97316; background: #fff7ed; }
+        .card.suit-cups { border-color: #3b82f6; background: #eff6ff; }
+        .card.suit-swords { border-color: #6b7280; background: #f9fafb; }
+        .card.suit-pentacles { border-color: #22c55e; background: #f0fdf4; }
+        .card.suit-major { border-color: #8b5cf6; background: #f5f3ff; }
+        
+        .card-position {
+            font-size: 0.75em;
+            color: #fff;
+            background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
+        .card-image { 
+            width: 120px; 
+            height: 200px; 
+            object-fit: contain; 
+            margin-bottom: 10px;
+            border-radius: 6px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card.reversed .card-image { 
+            transform: rotate(180deg); 
+        }
+        
+        .card-name { 
+            font-weight: bold; 
+            font-size: 0.9em; 
+            margin-bottom: 4px;
+            color: #1e1b2e;
+        }
+        
+        .card-orientation { 
+            font-size: 0.75em; 
+            color: #888;
+            padding: 2px 8px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .card.reversed .card-orientation { 
+            color: #c0392b; 
+            font-weight: bold;
+            background: rgba(192, 57, 43, 0.1);
+        }
+        
+        .error { 
+            color: #c0392b; 
+            text-align: center; 
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(192, 57, 43, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .error.visible {
+            display: block;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #5b21b6;
+            font-size: 1.1em;
+            padding: 40px;
+        }
+        
+        .loading::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        .history-btn {
+            background:  #6366f1;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        
+        .history-btn:hover {
+            background: #818cf8;
+        }
+        
+        .history-section {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .history-section.visible {
+            display: block;
+        }
+        
+        .history-title {
+            text-align: center;
+            color: #34495e;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        
+        .history-item {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .history-type {
+            font-weight: 600;
+            color: #7c4d03;
+            font-size: 1.1em;
+        }
+        
+        .history-date {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .history-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .history-card {
+            background: linear-gradient(145deg, #fdf6e8 0%, #f9e4b7 100%);
+            border: 1px solid #e0c48c;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.85em;
+        }
+        
+        .history-card.reversed {
+            background: linear-gradient(145deg, #fce4e4 0%, #f5c5c5 100%);
+            border-color: #e0a0a0;
+        }
+        
+        .back-btn {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            box-shadow: 0 4px 12px rgba(127, 140, 141, 0.3);
+        }
+        
+        .back-btn:hover {
+            background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%);
+        }
+        
+        .no-history {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            
+            .card {
+                width: 140px;
+                padding: 10px;
+            }
+            
+            .card-image {
+                width: 100px;
+                height: 170px;
+            }
+            
+            button {
+                padding: 12px 20px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Tarot Spread</h1>
+    <p class="subtitle">Choose your spread and discover what the cards reveal</p>
+    
+    <div class="buttons" id="mainButtons">
+        <button onclick="draw('three')">3 Cards</button>
+        <button onclick="draw('five')">5 Cards</button>
+        <button onclick="draw('ten')">10 Cards</button>
+        <button class="history-btn" onclick="showHistory()">History</button>
+    </div>
+    
+    <div class="spread-title" id="spreadTitle"></div>
+    <div class="cards" id="cards"></div>
+    <div class="error" id="error"></div>
+    
+    <div class="history-section" id="historySection">
+        <div class="buttons">
+            <button class="back-btn" onclick="hideHistory()">← Back to Spreads</button>
+        </div>
+        <h2 class="history-title">History of Spreads</h2>
+        <div id="historyContent"></div>
+    </div>
+</div>
+
+<script>
+const positions = {
+    three: ['Past', 'Present', 'Future'],
+    five: ['Situation', 'Obstacle', 'Past', 'Future', 'Advice'],
+    ten: [
+        'Situation', 'Influence / Challenge', 'Past', 'Future', 'Goal / Conscious',
+        'Subconscious', 'Advice', 'External Influences', 'Hopes & Fears', 'Outcome'
+    ]
+};
+
+const spreadTitles = {
+    three: 'Three Card Spread — Past, Present, Future',
+    five: 'Five Card Spread — Guidance Reading',
+    ten: 'Ten Card Spread — Celtic Cross'
+};
+
+function getSuitClass(cardName) {
+    const name = cardName.toLowerCase();
+    if (name.includes('wands')) return 'suit-wands';
+    if (name.includes('cups')) return 'suit-cups';
+    if (name.includes('swords')) return 'suit-swords';
+    if (name.includes('pentacles')) return 'suit-pentacles';
+    // Major Arcana
+    return 'suit-major';
+}
+
+function draw(kind) {
+    const errorEl = document.getElementById('error');
+    const cardsEl = document.getElementById('cards');
+    const titleEl = document.getElementById('spreadTitle');
+    const mainButtons = document.getElementById('mainButtons');
+    const subtitleEl = document.querySelector('.subtitle');
+    
+    errorEl.classList.remove('visible');
+    errorEl.textContent = '';
+    cardsEl.innerHTML = '<div class="loading">Drawing your cards</div>';
+    titleEl.classList.remove('visible');
+    titleEl.textContent = '';
+    
+    mainButtons.style.display = 'none';
+    subtitleEl.style.display = 'none';
+    
+    // Remove ten-cards class
+    cardsEl.classList.remove('ten-cards');
+    
+    fetch('/api/tarot/spread/' + kind)
+        .then(r => {
+            if (!r.ok) throw new Error('Server error');
+            return r.json();
+        })
+        .then(data => {
+            // Show spread title
+            titleEl.textContent = spreadTitles[kind];
+            titleEl.classList.add('visible');
+            
+            const positionLabels = positions[kind];
+            
+            if (kind === 'ten') {
+                cardsEl.classList.add('ten-cards');
+                // Split into two rows of 5
+                const row1 = data.cards.slice(0, 5);
+                const row2 = data.cards.slice(5, 10);
+                
+                cardsEl.innerHTML = `
+                    <div class="cards-row">
+                        ${row1.map((c, i) => createCardHTML(c, positionLabels[i], i)).join('')}
+                    </div>
+                    <div class="cards-row">
+                        ${row2.map((c, i) => createCardHTML(c, positionLabels[i + 5], i + 5)).join('')}
+                    </div>
+                `;
+            } else {
+                cardsEl.innerHTML = data.cards.map(
+                    (c, i) => createCardHTML(c, positionLabels[i], i)
+                ).join('');
+            }
+        })
+        .catch(e => {
+            cardsEl.innerHTML = '';
+            titleEl.classList.remove('visible');
+            errorEl.textContent = 'Error: ' + e.message;
+            errorEl.classList.add('visible');
+        });
+}
+
+function createCardHTML(card, position, index) {
+    const suitClass = getSuitClass(card.name);
+    const orientationClass = card.orientation === 'reversed' ? 'reversed' : '';
+    const meaning = card.orientation === 'reversed' ? card.meaning_reversed : card.meaning_upright;
+    
+    return `<div class="card ${orientationClass} ${suitClass}">
+        <div class="card-content">
+            <div class="card-position">${position}</div>
+            <img class="card-image" src="/static/${card.image_path}" alt="${card.name}">
+            <div class="card-name">${card.name}</div>
+            <div class="card-orientation">${card.orientation}</div>
+        </div>
+        <div class="card-meaning">${meaning}</div>
+    </div>`;
+}
+
+function showHistory() {
+    fetch('/api/tarot/history?limit=20')
+        .then(r => {
+            if (!r.ok) throw new Error('Server error');
+            return r.json();
+        })
+        .then(data => {
+            document.body.innerHTML = '<pre style="background:white;color:black;padding:20px;margin:0;min-height:100vh;">' + JSON.stringify(data, null, 2) + '</pre>';
+        })
+        .catch(e => {
+            document.body.innerHTML = '<pre style="background:white;color:black;padding:20px;">Error: ' + e.message + '</pre>';
+        });
+}
+
+function hideHistory() {
+    const historySection = document.getElementById('historySection');
+    const mainButtons = document.getElementById('mainButtons');
+    const cardsEl = document.getElementById('cards');
+    const titleEl = document.getElementById('spreadTitle');
+    const subtitleEl = document.querySelector('.subtitle');
+    
+    historySection.classList.remove('visible');
+    mainButtons.style.display = 'flex';
+    cardsEl.style.display = 'flex';
+    titleEl.style.display = 'block';
+    subtitleEl.style.display = 'block';
+}
+</script>
+</body>
+</html>

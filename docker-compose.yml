@@ -7,11 +7,43 @@ services:
       dockerfile: backend/Dockerfile
     ports:
       - "5000:5000"
+    environment:
+      DATABASE_URL: postgresql://tarot:tarot@db:5432/tarot
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tarot
+      POSTGRES_USER: tarot
+      POSTGRES_PASSWORD: tarot
+    ports:
+      - "5432:5432"
+    volumes:
+      - tarot_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tarot -d tarot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   client:
     build:
       context: .
       dockerfile: client/Dockerfile
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+      db:
+        condition: service_healthy
     command: python check_server.py
+
+volumes:
+  tarot_pgdata:

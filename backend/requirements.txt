@@ -2,3 +2,6 @@ flask
 requests
 psycopg2-binary
 sqlalchemy
+Flask-SQLAlchemy
+pytest
+flask-swagger-ui

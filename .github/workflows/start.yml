@@ -16,7 +16,31 @@ jobs:
         uses: docker/setup-buildx-action@v3
       - name: build and start containers
         run: docker compose up --build -d
-      - name: wait for backend to start
-        run: sleep 5
-      - name: run client (test)
+
+      - name: wait for backend healthcheck
+        run: |
+          for i in {1..20}; do
+            if [ "$(docker inspect -f '{{.State.Health.Status}}' cs-project-2025-matveidetonator-backend-1 2>/dev/null)" = "healthy" ]; then
+              echo "Backend is healthy!"
+              break
+            fi
+            echo "Waiting for backend to be healthy..."
+            sleep 3
+          done
+
+      - name: run client (integration test)
         run: docker compose run --rm client
+
+      - name: run unit tests
+        run: docker compose exec backend pytest backend/test_unit.py
+
+      - name: run api tests
+        run: docker compose exec backend pytest backend/test_api.py
+
+      - name: docker compose logs (on failure)
+        if: failure()
+        run: docker compose logs
+
+      - name: stop containers
+        if: always()
+        run: docker compose down --volumes
