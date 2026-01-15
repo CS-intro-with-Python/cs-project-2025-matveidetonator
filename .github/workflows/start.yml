@@ -32,11 +32,9 @@ jobs:
         run: docker compose run --rm client
 
 
-      - name: run unit tests
-        run: docker compose exec backend pytest /app/backend/test_unit.py
+      - name: run all backend tests
+        run: docker compose exec backend pytest /app
 
-      - name: run api tests
-        run: docker compose exec backend pytest /app/backend/test_api.py
 
       - name: docker compose logs (on failure)
         if: failure()
